@@ -2,7 +2,7 @@
 Author: Salama Algaz
 Date: 10/11/2024
 
-
+Hello it's on github now
 
 Data retrieved from https://www.somacon.com/p570.php
 '''
