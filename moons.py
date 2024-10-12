@@ -73,9 +73,9 @@ def main():
 	day_offset = 0
 	days_count = 0
 	difference_lunar = 0
-	lunar_year = 2024
+	lunar_year = 1900
 	lunar_days = 0
-	filename = FILES[2055]
+	filename = FILES[1900]
 	fullmoon_dates, num_entries = parse_file(filename)
 	fullmoon_count = 0
 	final_year = datetime.strptime(fullmoon_dates[-1]["datetime"], DATEFORMAT).year
@@ -130,11 +130,11 @@ def main():
 		# days_off += days_difference - MONTHS_DAYSCOUNT[now_date.month]
 
 
-		print(f"{MONTHS[fullmoon_count]} \t {MONTHS_DAYSCOUNT[fullmoon_count]} \t" + 
-			f"{fullmoon_dates[i]["friendlydate"]} - {next_row["friendlydate"]}") #\t{round(days_difference, 3)}
+		print(f"{MONTHS[fullmoon_count]} \t {MONTHS_DAYSCOUNT[fullmoon_count]} \t"+ 
+			f"{fullmoon_dates[i]['friendlydate']} - {next_row['friendlydate']}") #\t{round(days_difference, 3)}
 
 		
-		print(f"\t\t\t\t{now_date.strftime("%B %d, %Y")} - {m.strftime("%B %d, %Y")}")
+		print(f"\t\t\t\t{now_date.strftime('%B %d, %Y')} - {m.strftime('%B %d, %Y')}")
 
 
 
@@ -177,69 +177,69 @@ def main():
 
 
 '''	----------- MAIN -------------- '''
-def main_backup():
+# def main_backup():
 
-	'''	--------- VARIABLES ------------ '''
-	days_off = 0
-	day_offset = 0
-	days_count = 0
-	difference_lunar = 0
-	lunar_year = 2024
-	filename = FILES[2027]
-	fullmoon_dates, num_entries = parse_file(filename)
-	fullmoon_count = 0
-	final_year = datetime.strptime(fullmoon_dates[-1]["datetime"], DATEFORMAT).year
+# 	'''	--------- VARIABLES ------------ '''
+# 	days_off = 0
+# 	day_offset = 0
+# 	days_count = 0
+# 	difference_lunar = 0
+# 	lunar_year = 2024
+# 	filename = FILES[2027]
+# 	fullmoon_dates, num_entries = parse_file(filename)
+# 	fullmoon_count = 0
+# 	final_year = datetime.strptime(fullmoon_dates[-1]["datetime"], DATEFORMAT).year
 
-	for i in range(num_entries):
+# 	for i in range(num_entries):
 
-		now_row = fullmoon_dates[i]
-		next_row = fullmoon_dates[i + 1]
+# 		now_row = fullmoon_dates[i]
+# 		next_row = fullmoon_dates[i + 1]
 
-		now_date = datetime.strptime(now_row["datetime"], DATEFORMAT)
-		next_date = datetime.strptime(next_row["datetime"], DATEFORMAT)
+# 		now_date = datetime.strptime(now_row["datetime"], DATEFORMAT)
+# 		next_date = datetime.strptime(next_row["datetime"], DATEFORMAT)
 
-		# Exit if last year
-		if now_date.year == final_year:
-			break;
+# 		# Exit if last year
+# 		if now_date.year == final_year:
+# 			break;
 
-		time_difference = next_date - now_date
-		days_difference = time_difference.total_seconds() / (24 * 3600)	# Between two fullmoons
+# 		time_difference = next_date - now_date
+# 		days_difference = time_difference.total_seconds() / (24 * 3600)	# Between two fullmoons
 
-		# Keep count of how many full moons
-		fullmoon_count += 1
+# 		# Keep count of how many full moons
+# 		fullmoon_count += 1
 
-		days_count += MONTHS_DAYSCOUNT[now_date.month]
+# 		days_count += MONTHS_DAYSCOUNT[now_date.month]
 
-		days_off += days_difference - MONTHS_DAYSCOUNT[now_date.month]
+# 		days_off += days_difference - MONTHS_DAYSCOUNT[now_date.month]
 
 
-		print(f"{MONTHS[fullmoon_count]} \t {MONTHS_DAYSCOUNT[fullmoon_count] + day_offset} \t" + 
-			f"{now_row["friendlydate"]} - {next_row["friendlydate"]}") #\t{round(days_difference, 3)}
+# 		print(f"{MONTHS[fullmoon_count]} \t {MONTHS_DAYSCOUNT[fullmoon_count] + day_offset} \t" + 
+# 			f"{now_row["friendlydate"]} - {next_row["friendlydate"]}") #\t{round(days_difference, 3)}
 
-		m = now_date + timedelta(days=MONTHS_DAYSCOUNT[fullmoon_count])
-		print(f"\t\t\t{now_row["friendlydate"]} - {m.strftime("%B %d, %Y")}")
+# 		m = now_date + timedelta(days=MONTHS_DAYSCOUNT[fullmoon_count])
+# 		print(f"\t\t\t{now_row["friendlydate"]} - {m.strftime("%B %d, %Y")}")
 
-		day_offset = 0
+# 		day_offset = 0
 
-		if next_date.month == 1 and now_date.month != next_date.month:
+# 		if next_date.month == 1 and now_date.month != next_date.month:
 			
-			difference_lunar += SOLARYEAR - days_count
-			lunar_year += 1
+# 			difference_lunar += SOLARYEAR - days_count
+# 			lunar_year += 1
 			
-			print("\ndays_off", days_off)
-			print(f"Solar year: {SOLARYEAR}")
-			print(f"Lunar year: {days_count}")
-			print("Difference:", difference_lunar)
-			print("The year is", lunar_year); print()
+# 			print("\ndays_off", days_off)
+# 			print(f"Solar year: {SOLARYEAR}")
+# 			print(f"Lunar year: {days_count}")
+# 			print("Difference:", difference_lunar)
+# 			print("The year is", lunar_year); print()
 
-			# For next year
-			if days_off > 1:
-				MONTHS_DAYSCOUNT[2] = 30
-			else:
-				MONTHS_DAYSCOUNT[2] = 29
+# 			# For next year
+# 			if days_off > 1:
+# 				MONTHS_DAYSCOUNT[2] = 30
+# 			else:
+# 				MONTHS_DAYSCOUNT[2] = 29
 
-			fullmoon_count = 0
-			days_count = 0
+# 			fullmoon_count = 0
+# 			days_count = 0
 
 
 
