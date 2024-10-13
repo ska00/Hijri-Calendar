@@ -21,11 +21,9 @@ page = requests.get(url, headers=headers)
 # Soup (don't know what that does yet)
 soup = BeautifulSoup(page.text, "html")
 
-data = soup.find_all('pre')
+data = soup.find_all('pre') 
 
 data.pop(0); data.pop(-1)
 
 # Both work
 # data = soup.find_all('div', class_ = 'pbox1a')
-
-print(data[0])

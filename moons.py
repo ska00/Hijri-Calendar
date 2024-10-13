@@ -43,9 +43,11 @@ FILES = {
 		}
 
 MONTHS = {1: "Safar I", 2: "Safar II", 3: "Rabi I\t", 4: "Rabi II", 5: "Jumada I", 6: "Jumada II",
-			7: "Rajab\t", 8: "Sha'ban", 9: "Ramadan", 10: "Shawwal", 11: "Dhul Hijjah", 12: "Dhul Qadah", 13: "Muharram"}
+			7: "Rajab\t", 8: "Sha'ban", 9: "Ramadan", 10: "Shawwal", 11: "Dhul Qadah", 12: "Dhul Hijjah", 13: "Muharram"}
 
 MONTHS_DAYSCOUNT = month_days()
+
+
 
 # Muharram
 MONTHS_DAYSCOUNT[13] = 30
@@ -100,9 +102,6 @@ def main():
 		# Keep count of how many full moons
 		fullmoon_count += 1
 
-		
-
-
 
 		if fullmoon_count == 13 and MONTHS_DAYSCOUNT[2] == 30:
 			days_count = 385
@@ -110,9 +109,6 @@ def main():
 			days_count = 384
 		else:
 			days_count += MONTHS_DAYSCOUNT[now_date.month]
-
-		
-
 
 
 
