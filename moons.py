@@ -31,6 +31,7 @@ AVG_SYNODIC_MONTH = 29 + 12 / 24 + (44/60 / 24)	# (units: days) 29 days, 12 hour
 DATEFORMAT = "%Y-%m-%d %H:%M:%S"
 
 FILES = { 
+		601: "moon-phases-601-to-2001-UT.csv",
 		1700: "moon-phases-1700-to-2100-UTC.csv",
 		1980: "moon-phases-1980-to-2077-UTC.csv",
 		1900: "moon-phases-1900-to-2100-UTC.csv",
@@ -46,6 +47,8 @@ MONTHS = {1: "Safar I", 2: "Safar II", 3: "Rabi I\t", 4: "Rabi II", 5: "Jumada I
 			7: "Rajab\t", 8: "Sha'ban", 9: "Ramadan", 10: "Shawwal", 11: "Dhul Qadah", 12: "Dhul Hijjah", 13: "Muharram"}
 
 MONTHS_DAYSCOUNT = month_days()
+
+
 
 
 
@@ -71,13 +74,15 @@ def parse_file(file):
 def main():
 
 	'''	--------- VARIABLES ------------ '''
+	days_added = 0
+	months_added = 0
 	days_off = 0
 	day_offset = 0
 	days_count = 0
 	difference_lunar = 0
-	lunar_year = 1900
+	lunar_year = 601
 	lunar_days = 0
-	filename = FILES[1900]
+	filename = FILES[601]
 	fullmoon_dates, num_entries = parse_file(filename)
 	fullmoon_count = 0
 	final_year = datetime.strptime(fullmoon_dates[-1]["datetime"], DATEFORMAT).year
@@ -121,6 +126,10 @@ def main():
 		l = next_date - now_date_gregorian
 		lunar_days += l.total_seconds() / (24 * 3600)
 
+		if (now_date_gregorian - now_date).days >= 3:
+			print("Greater than 3 days difference!")
+			break
+
 		time_difference = next_date - now_date_gregorian
 		days_difference = time_difference.total_seconds() / (24 * 3600)	# Between two fullmoons
 		# days_off += days_difference - MONTHS_DAYSCOUNT[now_date.month]
@@ -155,20 +164,29 @@ def main():
 			
 			# For next year
 			if days_off >= 0.9:
+				days_added += 1
 				MONTHS_DAYSCOUNT[2] = 30
 				MONTHS_DAYSCOUNT[3] = 30
 			elif days_off <= -0.9:
+				days_added -= 1
 				MONTHS_DAYSCOUNT[3] = 29
 				MONTHS_DAYSCOUNT[2] = 29
 			else:
 				MONTHS_DAYSCOUNT[2] = 29
 				MONTHS_DAYSCOUNT[3] = 30
+
+			if fullmoon_count == 13:
+				months_added += 1
+
 			
 
 
 			fullmoon_count = 0
 			days_count = 0
 			lunar_days = 0
+
+	print("number of days addded:", days_added)
+	print("Number of months added:", months_added)
 
 
 
