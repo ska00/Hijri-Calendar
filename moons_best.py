@@ -3,6 +3,14 @@ Author: Salama Algaz
 Date: 10/11/2024
 
 
+If Next year is going to be off we need to remove a day off in that year rather than waiting
+for next year to implement it. Code needs to be rewritten so the code is more efficient. 
+For example, backtracking rather than getting a future estimate is faster.
+Also, using 'e' as an estimate of when to put muharram rather than on physical observations, and 5.167
+(this number is based on observations made from full moon data) years to add a day. 
+Further data analysis can be made on the pattern to be observed of when the days are added.
+Instead of depending on a crude average, the years can be clustered and rules can be derived, that is
+if a pattern could be found.
 
 Data retrieved from https://www.somacon.com/p570.php and astropixels.com
 '''
@@ -49,7 +57,9 @@ MONTHS = {1: "Safar I", 2: "Safar II", 3: "Rabi I\t", 4: "Rabi II", 5: "Jumada I
 
 MONTHS_DAYSCOUNT = get_month_daycounts()
 
-CHANGING_MONTH = 2
+CHANGING_MONTH = 12
+
+HIRJI_STARTING_YEAR = 622
 
 # Muharram
 MONTHS_DAYSCOUNT[13] = 30
@@ -88,9 +98,9 @@ def main():
 	day_offset = 0
 	days_count = 0
 	difference_lunar = 0
-	lunar_year = 1900
+	lunar_year = 0
 	lunar_days = 0
-	filename = FILES[1900]
+	filename = FILES[601]
 	fullmoon_dates, num_entries = parse_file(filename)
 	fullmoon_count = 0
 	final_year = datetime.strptime(fullmoon_dates[-1]["datetime"], DATEFORMAT).year
@@ -99,6 +109,10 @@ def main():
 	running_years = 0
 	running_days = 0
 	every_other_muharram = False
+	days_added_dict = {}	# NULL
+
+	days_added_list = []
+	order = 1
 
 	for i in range(num_entries):
 
@@ -114,6 +128,9 @@ def main():
 		# Exit if last year
 		if now_date.year == final_year:
 			break;
+
+		if now_date.year < HIRJI_STARTING_YEAR:
+			continue;
 
 		
 		# Keep count of how many full moons
@@ -138,8 +155,8 @@ def main():
 		l = next_date - now_date_gregorian
 		lunar_days += l.total_seconds() / (24 * 3600)
 
-		if (now_date_gregorian - now_date).days > 4 or (now_date - now_date_gregorian).days > 4:
-			print("Greater than 4 days difference!")
+		if (now_date_gregorian - now_date).days >= 4 or (now_date - now_date_gregorian).days >= 4:
+			print("Greater than 3 days difference!")
 			break
 
 
@@ -176,7 +193,7 @@ def main():
 
 			running_years += 1
 			# Count years in solar days!
-			running_years = running_years_sol
+			# running_years = running_years_sol
 			
 			print("\ndays_off", days_off)
 			print("Number of fullmoons:", fullmoon_count)
@@ -185,52 +202,63 @@ def main():
 			print("Difference:", difference_lunar)
 			print("The year is", lunar_year); print()
 
+			print(days_added_dict); print()
+
 			print("running_years", running_years)
 			print("e", e)
 			# print(year_contains_muharram(lunar_year, fullmoon_dates))
 			print()
 
-			is_muharram_next_year = year_contains_muharram(lunar_year, fullmoon_dates)
+			# is_muharram_next_year = year_contains_muharram(lunar_year, fullmoon_dates)
 
 			
 
-			if is_muharram_next_year and not every_other_muharram:
-				every_other_muharram = True
-				e += math.e
-			# Need to anticipate
-			if float(running_days + SOLARYEAR) / SOLARYEAR + 1 > e :
-				if is_muharram_next_year and every_other_muharram or not every_other_muharram:
-					days_added += 1 
-					MONTHS_DAYSCOUNT[CHANGING_MONTH] = 30
-					e = math.e + (float(running_days + SOLARYEAR) / SOLARYEAR - e)
-					running_years = 0
-					running_days = 0
-					every_other_muharram = False
-			else:
-				MONTHS_DAYSCOUNT[CHANGING_MONTH] = 29
-
+			# if is_muharram_next_year and not every_other_muharram:
+			# 	every_other_muharram = True
+			# 	e += math.e
+			# # Need to anticipate
+			# if float(running_days + SOLARYEAR) / SOLARYEAR + 1 > e :
+			# 	if is_muharram_next_year and every_other_muharram or not every_other_muharram:
+			# 		days_added += 1 
+			# 		MONTHS_DAYSCOUNT[CHANGING_MONTH] = 30
+			# 		e = math.e + (float(running_days + SOLARYEAR) / SOLARYEAR - e)
+			# 		running_years = 0
+			# 		running_days = 0
+			# 		every_other_muharram = False
+			# else:
+			# 	MONTHS_DAYSCOUNT[CHANGING_MONTH] = 29
+			# if is_muharram_next_year:
+			# 	running_years -= 1
 			# if running_years + 1 > e :
-				# if not is_muharram_next_year:
-				# 	days_added += 1
-				# 	e = math.e + (running_years +1 - e)
-				# 	running_years = 0
-				# 	running_days = 0
-				# 	MONTHS_DAYSCOUNT[CHANGING_MONTH] = 30
+			# 	# if not is_muharram_next_year:
+			# 	days_added += 1
+			# 	e = math.e + (running_years +1 - e)
+			# 	running_years = 0
+			# 	running_days = 0
+			# 	MONTHS_DAYSCOUNT[CHANGING_MONTH] = 30
 			# else:
 			# 	MONTHS_DAYSCOUNT[CHANGING_MONTH] = 29
 
 			# For next year
-			# if days_off >= 0.9:
-			# 	days_added += 1
-			# 	MONTHS_DAYSCOUNT[12] = 30
-			# 	MONTHS_DAYSCOUNT[3] = 30
+			if days_off >= 0.9:
+				days_added += 1
+				days_added_list.append({"Order": order, "Year": lunar_year, "Interval (years)": running_years, "Muharram": fullmoon_count == 13})
+				order += 1
+				try:
+					days_added_dict[running_years] += 1	
+				except KeyError:
+					days_added_dict[running_years] = 1
+				running_years = 0
+				MONTHS_DAYSCOUNT[CHANGING_MONTH] = 30
+				MONTHS_DAYSCOUNT[3] = 30
 			# elif days_off <= -0.9:
+			# 	sys.exit()
 			# 	days_added -= 1
 			# 	MONTHS_DAYSCOUNT[3] = 29
-			# 	MONTHS_DAYSCOUNT[2] = 29
-			# else:
-			# 	MONTHS_DAYSCOUNT[12] = 29
-			# 	MONTHS_DAYSCOUNT[3] = 30
+			# 	MONTHS_DAYSCOUNT[CHANGING_MONTH] = 29
+			else:
+				MONTHS_DAYSCOUNT[CHANGING_MONTH] = 29
+				MONTHS_DAYSCOUNT[3] = 30
 
 			if fullmoon_count == 13:
 				months_added += 1
@@ -243,7 +271,17 @@ def main():
 	print("number of days addded:", days_added)
 	print("Number of months added:", months_added)
 
+	# Write to csv file
+	with open("Days_added_601.csv", mode='w', newline='', encoding='utf-8') as file:
+        # Create a DictWriter object
+		writer = csv.DictWriter(file, fieldnames = days_added_list[0].keys())
 
+		writer.writeheader()
+
+        # Write the data
+		writer.writerows(days_added_list)
+
+	print(f"Data written successfully\n")
 
 
 

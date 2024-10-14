@@ -3,8 +3,8 @@
     Date: October 13, 2024
 
     Scrapes data from AstroPixels and writes to a readable csv file which is fed to 
-    the main pthon program to compute the Islamic Calendar. The csv file contains
-    the header: datetime,phase,friendlydate.
+    the main python program to compute the Islamic Calendar. The csv file contains
+    the headers: datetime,phase,friendlydate.
 
     This code does not handle errors that may pop up such as not being able to
     access the website.
