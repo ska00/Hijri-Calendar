@@ -22,7 +22,11 @@ Data retrieved from https://www.somacon.com/p570.php and astropixels.com
 import csv
 import math
 import sys
+import zoneinfo
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+
+print("Packages imported successfully")
 
 '''	--------- UTILITIES ------------ '''
 def get_number_of_days_in_month():
@@ -70,6 +74,8 @@ HIRJI_START_YEAR = 622 # AD
 # Add the 13th month: Muharram
 HIJRI_MONTHS[13] = "Muharram"
 HIJRI_MONTHS_DAYCOUNT[13] = 30
+
+MECCA_TIMEZONE = ZoneInfo("Asia/Riyadh")
 
 SOLARYEAR_DAYS = 365.24219	# days
 
@@ -120,15 +126,15 @@ def main():
 
 		# If loop starting get start of month from the observation of full moon
 		if end_month == -1:
-			start_month = datetime.strptime(entries[i]["datetime"], DATEFORMAT)
+			start_month = datetime.strptime(entries[i]["datetime"], DATEFORMAT).replace(tzinfo = ZoneInfo("UTC"))
 
 		# Exit if last year
 		if start_month.year == end_year: 	
 			break;
 
 		# Get start and end of calendar month from Gregorian (True i.e. observed Full Moon)
-		gregorian_start_month = datetime.strptime(entries[i]["datetime"], DATEFORMAT)
-		gregorian_end_month = datetime.strptime(entries[i + 1]["datetime"], DATEFORMAT)
+		gregorian_start_month = datetime.strptime(entries[i]["datetime"], DATEFORMAT).replace(tzinfo = ZoneInfo("UTC"))
+		gregorian_end_month = datetime.strptime(entries[i + 1]["datetime"], DATEFORMAT).replace(tzinfo = ZoneInfo("UTC"))
 
 		if gregorian_start_month.year < HIRJI_START_YEAR:
 			continue;
@@ -137,7 +143,14 @@ def main():
 		# Adjust month count
 		month_count += 1
 		# Get end of calendar month
-		end_month = start_month + timedelta(days = HIJRI_MONTHS_DAYCOUNT[month_count])
+		end_month = (start_month + timedelta(days = HIJRI_MONTHS_DAYCOUNT[month_count])).replace(tzinfo = ZoneInfo("UTC"))
+
+		# -------------------------------- TIMEZONE ------------------------------------
+		# start_month = start_month.astimezone(MECCA_TIMEZONE)
+		# end_month = end_month.astimezone(MECCA_TIMEZONE)
+		# gregorian_start_month = gregorian_start_month.astimezone(MECCA_TIMEZONE)
+		# gregorian_end_month = gregorian_end_month.astimezone(MECCA_TIMEZONE)
+
 
 		# Calculate the difference of the true full moon from the calendar full moon
 		# Check end of month so if it's kabs month (Dhul Hijjah) and its off by more than a day
