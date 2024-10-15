@@ -12,6 +12,9 @@ Further data analysis can be made on the pattern to be observed of when the days
 Instead of depending on a crude average, the years can be clustered and rules can be derived, that is
 if a pattern could be found.
 
+Need to push Muharram to the first year when the solar year diverges too far from
+the lunar year if before half the year has past otherwise put it at the end.
+
 Check ahead of time if it ends on wrong date [DONE]
 
 Data retrieved from https://www.somacon.com/p570.php and astropixels.com
@@ -21,6 +24,7 @@ Data retrieved from https://www.somacon.com/p570.php and astropixels.com
 '''	--------- PACKAGES ------------ '''
 import csv
 import math
+import pytz
 import sys
 from datetime import datetime, timedelta
 
@@ -70,6 +74,8 @@ HIRJI_START_YEAR = 622 # AD
 # Add the 13th month: Muharram
 HIJRI_MONTHS[13] = "Muharram"
 HIJRI_MONTHS_DAYCOUNT[13] = 30
+
+MECCA_TIMEZONE = pytz.timezone('Asia/Riyadh')
 
 SOLARYEAR_DAYS = 365.24219	# days
 
@@ -130,6 +136,8 @@ def main():
 		gregorian_start_month = datetime.strptime(entries[i]["datetime"], DATEFORMAT)
 		gregorian_end_month = datetime.strptime(entries[i + 1]["datetime"], DATEFORMAT)
 
+
+
 		if gregorian_start_month.year < HIRJI_START_YEAR:
 			continue;
 
@@ -138,6 +146,19 @@ def main():
 		month_count += 1
 		# Get end of calendar month
 		end_month = start_month + timedelta(days = HIJRI_MONTHS_DAYCOUNT[month_count])
+
+		# -------------------------------- TIMEZONE ------------------------------------
+		# Assign UTC to naive timezone
+		start_month.replace(tzinfo=pytz.utc)
+		end_month.replace(tzinfo=pytz.utc)
+		gregorian_start_month.replace(tzinfo=pytz.utc)
+		gregorian_end_month.replace(tzinfo=pytz.utc)
+
+		# 
+		start_month = start_month.astimezone(MECCA_TIMEZONE)
+		end_month = end_month.astimezone(MECCA_TIMEZONE)
+		gregorian_start_month = gregorian_start_month.astimezone(MECCA_TIMEZONE)
+		gregorian_end_month = gregorian_end_month.astimezone(MECCA_TIMEZONE)
 
 		# Calculate the difference of the true full moon from the calendar full moon
 		# Check end of month so if it's kabs month (Dhul Hijjah) and its off by more than a day
@@ -171,7 +192,9 @@ def main():
 
 		# Print Hijri calendar
 		print(f"Hijri (Natural): \t{HIJRI_MONTHS[month_count]} {1}, {lunar_year} - "
-				+ f"{HIJRI_MONTHS[month_count]} {HIJRI_MONTHS_DAYCOUNT[month_count]}, {lunar_year}\n")
+				+ f"{HIJRI_MONTHS[month_count]} {HIJRI_MONTHS_DAYCOUNT[month_count]}, {lunar_year}")
+		print("\t\t\t\t\t\tDays off:", lunar_days_off)
+		print()
 
 
 		# -------- END OF YEAR ---------
