@@ -12,7 +12,10 @@ the Muharram month. An alternative would be to calculate the deviation of the lu
 having 354 or 355 days) from the solar year(365.24 days) and once the gap exceeds a certain amount
 the extra month is placed again depending on where this gap exceeded it's limit.
 
-With that, I hope the results outputted help in bringing us closer to a better understading of the 
+I've tried to look for a pattern for the placement of Muharram and the Kabs days but could not find
+one. Instead I look for deviations from solar calendar and adjust if needed.
+
+With that, I hope the results outputted help in bringing us closer to a better understanding of the 
 Hijri (Islamic) calendar. I confess that the code can be written more clearly and efficiently.
 
 Note:
@@ -61,6 +64,8 @@ FILES = [
 		{"start_year": 2024, "end_year": 2044, "filename": "moon-phases-2024-to-2044-UTC.csv"},
 		{"start_year": 2024, "end_year": 2055, "filename": "moon-phases-2024-to-2055-UTC.csv"},
 		]
+
+FILE_W_ECLIPSES = "moon-phases-601-to-2100-with-eclipses-UT.csv"
 
 # This is the month that occassionally has an extra day, so Dhul Hijjah sometimes has 29 or 30 days
 KABS_MONTH = 12
@@ -121,6 +126,16 @@ def parse_file(start_year, end_year):
 	print("\nFile parsed successfully\n")
 	return entries
 
+def parse_file_with_eclipses(filename):
+	""" Reads file, recording entries only when it's a full moon """
+
+	entries = []
+	with open(filename, "r") as csvfile:
+		reader = csv.DictReader(csvfile)
+		entries = list(filter(is_fullmoon, reader))
+
+	print("\nFile parsed successfully\n")
+	return entries
 
 
 '''	----------- MAIN -------------- '''
@@ -130,7 +145,8 @@ def main():
 	'''	--------- GLOBALS* ------------ '''
 	start_year = 601
 	end_year = 2100
-	entries = parse_file(start_year, end_year)
+	# entries = parse_file(start_year, end_year)
+	entries = parse_file_with_eclipses(FILE_W_ECLIPSES)
 	entries_length = len(entries)
 
 
@@ -245,7 +261,7 @@ def main():
 		lunar_days += HIJRI_MONTHS_DAYCOUNT[month_count]
 
 		# Print Hijri Month
-		print(f"{HIJRI_MONTHS[month_count]} {HIJRI_MONTHS_DAYCOUNT[month_count]}")
+		print(f"{HIJRI_MONTHS[month_count]} {HIJRI_MONTHS_DAYCOUNT[month_count]} \t\t\t\t\t\t\t\t\t\t\t\t\t\t{entries[i]['eclipse']}")
 
 		# Print the Gregorian date
 		print(f"\tFull Moon Observed: "+ 
@@ -278,7 +294,7 @@ def main():
 				break;
 
 			print(f"\n------------------------------- THE YEAR IS {upcoming_year} ------------------------------\n")
-
+				
 
 			hirji_year += 1
 			lunar_days  = 0

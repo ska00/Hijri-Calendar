@@ -20,7 +20,9 @@
 
     The julian calendar must be converted to Gregorian before use.
 
-    Code takes approxiamately 7.7 seconds to run on my PC
+    I will add eclipse tags.
+
+    Code takes approxiamately 7.7 seconds to run on my PC.
 """
 
 """------------------ PACKAGES -------------------"""
