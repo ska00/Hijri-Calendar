@@ -2,6 +2,7 @@
 Author: Salama Algaz
 Date: 10/11/2024
 
+Follows the Metonic cycle.
 This the observation-based Hijri calendar. The days of each month vary each year in an unpredictable way.
 However, each month always starts 1 day after the full moon occurs. Ramadan is sometimes 29 or 30 days.
 This is identical to the Islamic calendar with the exception of adding a 13th month occasionally.
@@ -77,6 +78,8 @@ MUHARRAM_YEARS = [3, 6, 8, 11, 14, 17, 19] #[1, 4, 6, 9, 12, 15, 17]
 
 MECCA_TIMEZONE = pytz.timezone('Asia/Riyadh')
 
+SOLARYEAR_DAYS = 365.24
+
 
 '''	-------- FUNCTIONS ------------ '''
 def get_filename(start_year, end_year, contains_eclipse = False):
@@ -139,53 +142,18 @@ def parse_file_with_eclipses(start_year, end_year):
 
 def main():
 
-	'''	--------- GLOBALS* (*not really..) ------------ '''
+	'''	--------- VARIABLES ------------ '''
 	start_year = 601
 	end_year = 2100
 	entries = parse_file(start_year, end_year)
 	# entries = parse_file_with_eclipses(start_year, end_year)
 	entries_length = len(entries)
 
-
-	def get_muharram_position(index, year):
-		"""
-			This checks if the given year contains a blue moon (or 13 full moons) and returns
-			the position (1) if the blue moon occurs in the months 1 - 6 inclusive, 13 if in the 
-			months 7 - 12 inclusive. Otherwise, if there is no Muharram month it will return -1.
-
-			Note: This is defined within main so that it can access the variable 'entries'.
-				It is not ideal to nest this function within main but it is less ideal to pass in the 
-				large list 'entries'. It significantly slows down the program.
-		"""
-		_month_count = 1
-		_index = index
-
-		while(_month_count < 14):
-			try:
-				_start_month = datetime.strptime(entries[_index]["datetime"], DATEFORMAT).month
-				_end_month = datetime.strptime(entries[_index + 1]["datetime"], DATEFORMAT).month
-				_year = datetime.strptime(entries[_index]["datetime"], DATEFORMAT).year
-			except:
-				return -1
-
-			if _year > year:
-				return -1
-
-			if _start_month == _end_month:
-				return 1 if _month_count <= 6 else 13
-
-			_month_count += 1
-			_index += 1
-
-		return -1	
-
-
-	'''	--------- VARIABLES ------------ '''
-
 	hijri_month_lens = {29: 0, 30: 0}
 	hirji_year = 1  					# Hirji year
 	month_count = 0 					# Which month we're in, look at 'HIJRI_MONTHS'
-	muharram_position = -1  			# The position the month 'Muharram' falls into
+	lunar_days = 0
+	is_muharram = False
 
 
 	for i in range(entries_length):
@@ -224,10 +192,12 @@ def main():
 		gregorian_end_month = gregorian_end_month.astimezone(MECCA_TIMEZONE)
 
 		
-
 		# Length of hirji month
 		hijri_month_len = round((end_month - start_month).total_seconds() / (24* 3600)) + 1
 		hijri_month_lens[hijri_month_len] += 1
+
+		# Keep track of lunar days
+		lunar_days += hijri_month_len
 
 		# Print Hijri Month
 		print(f"{HIJRI_MONTHS[month_count]} {hijri_month_len}")
@@ -247,7 +217,15 @@ def main():
 
 
 		# -------- END OF YEAR ---------
-		if (end_month.month == 1 and start_month.month != 1) or month_count == 13:
+		if (month_count == 12 and not is_muharram) or month_count == 13:
+
+			# Check deviation of Hijri year (in days) from solar year
+			if abs(SOLARYEAR_DAYS - lunar_days) > 30:
+				print("\nTERMINATING PROGRAM: HIRJI YEAR IS OFF FROM SOLAR YEAR BY MORE THAN 30 DAYS")
+				print("\nDIFFERENCE:", abs(SOLARYEAR_DAYS - lunar_days))
+				print("\n[FAILURE] Computing Hijri Calendar\n")
+
+				sys.exit(2)
 
 			upcoming_year = end_month.year
 
@@ -255,21 +233,17 @@ def main():
 			if upcoming_year == end_year: 	
 				break;
 
-			print(f"Number of months with 29 days: {hijri_month_lens[29]}, Number of months with 30 days: {hijri_month_lens[30]}")
-
-			print(f"\n------------------------------- THE YEAR IS {upcoming_year} ------------------------------\n")
+			print(f"\n------------------------------- THE YEAR IS {hirji_year + 1} ------------------------------\n")
 				
-			hijri_month_lens = {29: 0, 30: 0}
-			hirji_year += 1
-			month_count = 0
-			muharram_position = get_muharram_position(i, upcoming_year)
 
-			# If Muharram is beginning of year shift all the months down
-			if muharram_position == 1:
-				month_count = -1
+			hirji_year += 1
+			lunar_days  = 0
+			month_count = 0
+
+			is_muharram = hirji_year % 19 in MUHARRAM_YEARS
 
 			# For debugging purposes
-			print(f"Muharram position:", muharram_position); print()
+			print(f"Is Leap Year:", is_muharram); print()
 
 
 	print("\n[SUCCESS] Computing Hijri Calendar (Simple)\n")
