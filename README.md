@@ -32,9 +32,11 @@ In the Metonic cycle, seven years are leap years (in which the 13th month is add
 is one of the 3, 6, 8, 11, 14, 17, 19 years in the 19-year cycle. Though, in this piece of code, the 13th month is always added to the end of the Hijri year. Check out the file
 named [hijri_calendar_naive_metonic.py](https://github.com/ska00/Hijra-Calendar/blob/main/hijri_calendar_naive_metonic.py).
 
-## Implementing the Metonic Cycle in the observation-based Hijri Calendar
+## Implementing the Metonic Cycle in the Observation-Based Hirji Calendar
 
-To-DO
+This section implements the Metonic cycle in the observation-based Hijri calendar. Given any Hijri year it can be known whether there is a leap month or not. Note that the 13th month
+is always added to the end of the year.
+Check out the file named [hijri_calendar_naive_simple_metonic.py](https://github.com/ska00/Hijra-Calendar/blob/main/hijri_calendar_naive_simple_metonic.py)
 
 
 _Moon Phases Table courtesy of Fred Espenak, www.Astropixels.com._
