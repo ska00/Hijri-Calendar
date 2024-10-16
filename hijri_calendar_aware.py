@@ -130,7 +130,7 @@ def get_filename(start_year, end_year, contains_eclipse = False):
 def parse_file(start_year, end_year):
 	""" Reads file, recording entries only when it's a full moon """
 
-	filename = get_filename(start_year, end_year)
+	filename = "Moon phases CSV files/" + get_filename(start_year, end_year)
 
 	entries = []
 	with open(filename, "r") as csvfile:
@@ -143,7 +143,7 @@ def parse_file(start_year, end_year):
 def parse_file_with_eclipses(start_year, end_year):
 	""" Reads file, recording entries only when it's a full moon """
 
-	filename = get_filename(start_year, end_year, True)
+	filename = "Moon phases CSV files w eclipses/" + get_filename(start_year, end_year, True)
 
 	entries = []
 	eclipses = []
