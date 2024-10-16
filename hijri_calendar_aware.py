@@ -18,9 +18,13 @@ one. Instead I look for deviations from solar calendar and adjust if needed.
 With that, I hope the results outputted help in bringing us closer to a better understanding of the 
 Hijri (Islamic) calendar. I confess that the code can be written more clearly and efficiently.
 
+Note: 
+The data on Astropixels.com has one error where the year 3869 has two januarys. I manually had to change
+the year of the second January to 3870. Keep this in mind when using the data_scraper_with_eclipses.py file
+
 Note:
-The data used is in UTC timezone, however the output displays 
-the dates in AST timezone which is the timezone of Mecca. 
+The data used is in UTC/UT timezone, however the output displays 
+the dates in AST timezone which is the timezone of Mecca, Saudi Arabia. 
 
 Credits:
 Some tables retrieved from https://www.somacon.com/p570.php
@@ -34,6 +38,9 @@ import math
 import pytz
 import sys
 from datetime import datetime, timedelta
+
+
+print("Packages imported successfully")
 
 
 '''	--------- UTILITIES ------------ '''
@@ -65,7 +72,11 @@ FILES = [
 		{"start_year": 2024, "end_year": 2055, "filename": "moon-phases-2024-to-2055-UTC.csv"},
 		]
 
-FILE_W_ECLIPSES = "moon-phases-601-to-2100-with-eclipses-UT.csv"
+FILES_W_ECLIPSES = [
+		{"start_year":  601, "end_year": 700, "filename": "moon-phases-601-to-700-with-eclipses-UT.csv"},
+		{"start_year":  601, "end_year": 2100, "filename": "moon-phases-601-to-2100-with-eclipses-UT.csv"},
+		{"start_year":  601, "end_year": 4000, "filename": "moon-phases-601-to-4000-with-eclipses-UT.csv"},
+		]
 
 # This is the month that occassionally has an extra day, so Dhul Hijjah sometimes has 29 or 30 days
 KABS_MONTH = 12
@@ -105,9 +116,12 @@ SOLARYEAR_DAYS = 365.24219	# days
 
 
 '''	-------- FUNCTIONS ------------ '''
-def get_filename(start_year, end_year):
+def get_filename(start_year, end_year, contains_eclipse = False):
 	""" Returns filename of the csv file with the given starting and ending year """
-	for file in FILES:
+	
+	_files = FILES_W_ECLIPSES if contains_eclipse else FILES
+
+	for file in _files:
 		if file["start_year"] == start_year and file["end_year"] == end_year:
 			return file["filename"]
 
@@ -126,14 +140,34 @@ def parse_file(start_year, end_year):
 	print("\nFile parsed successfully\n")
 	return entries
 
-def parse_file_with_eclipses(filename):
+def parse_file_with_eclipses(start_year, end_year):
 	""" Reads file, recording entries only when it's a full moon """
 
-	entries = []
-	with open(filename, "r") as csvfile:
-		reader = csv.DictReader(csvfile)
-		entries = list(filter(is_fullmoon, reader))
+	filename = get_filename(start_year, end_year, True)
 
+	entries = []
+	eclipses = []
+
+	with open(filename, "r") as csvfile:
+		
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			
+			if row["phase"] != "Full Moon":
+				if eclipse := row["eclipse"]:
+					eclipses.append(eclipse)
+				continue
+
+			if eclipses != []:
+				if entries[-1]["eclipse"] == "":
+					entries[-1]["eclipse"] = ", ".join(eclipses)
+				else:
+					entries[-1]["eclipse"] = entries[-1]["eclipse"] + ", " + ", ".join(eclipses)
+				eclipses = []
+			
+			entries.append(row)
+
+			
 	print("\nFile parsed successfully\n")
 	return entries
 
@@ -142,11 +176,11 @@ def parse_file_with_eclipses(filename):
 
 def main():
 
-	'''	--------- GLOBALS* ------------ '''
+	'''	--------- GLOBALS* (*not really..) ------------ '''
 	start_year = 601
-	end_year = 2100
+	end_year = 4000
 	# entries = parse_file(start_year, end_year)
-	entries = parse_file_with_eclipses(FILE_W_ECLIPSES)
+	entries = parse_file_with_eclipses(start_year, end_year)
 	entries_length = len(entries)
 
 
@@ -209,7 +243,6 @@ def main():
 		if gregorian_start_month.year < HIRJI_START_YEAR:
 			continue;
 
-
 		# Add month count
 		month_count += 1
 		# Get end of calendar month
@@ -229,23 +262,23 @@ def main():
 		gregorian_start_month = gregorian_start_month.astimezone(MECCA_TIMEZONE)
 		gregorian_end_month = gregorian_end_month.astimezone(MECCA_TIMEZONE)
 
+		
 		"""
-		Calculate the difference of the true full moon (Gregorian) from the (Hirji) calendar full moon
-		You can either calculate deviation in the start of the month or the end of the month.
+			Calculate the difference of the true full moon (Gregorian) from the (Hirji) calendar full moon
+			You can either calculate deviation in the start of the month or the end of the month.
 		"""
 		# lunar_days_off = (end_month - gregorian_end_month).total_seconds() /(24 * 3600)
 		lunar_days_off = (start_month - gregorian_start_month).total_seconds() /(24 * 3600)
 			
 
 		"""
-		If it's kabs month (Dhul Hijjah) and its off by more than a day (note: we want to be off by 1 day
-		calendar month starts AFTER a full moon is observed barring occassional deviations)add an extra day. 
-		This ensures no difference more than THREE whole days happens.
+			If it's kabs month (Dhul Hijjah) and its off by more than a day (note: we want to be off by 1 day because
+			calendar month starts AFTER a full moon is observed barring occassional deviations) add an extra day. 
+			This ensures no difference more than THREE whole days happens.
 		"""
 		# Adjust length of the month accordingly if it's KABS month
 		if lunar_days_off <= LIMIT_LUNAR_DAYS_OFF and month_count == KABS_MONTH and muharram_position == -1:
-			# Add a day to the end of the month
-			end_month += timedelta(days = 1)
+			end_month += timedelta(days = 1)			# Add a day to the end of the month
 			HIJRI_MONTHS_DAYCOUNT[KABS_MONTH] = 30  	# This is for printing purposes
 		
 		else:
@@ -254,6 +287,7 @@ def main():
 
 		if lunar_days_off > 3 or lunar_days < -3:
 			print("\nTERMINATING PROGRAM: LUNAR DAYS MORE THAN THREE WHOLE DAYS OFF")
+			print(f"\nLUNAR DAYS OFF: {lunar_days_off}")
 			print("\n[FAILURE] Computing Hijri Calendar\n")
 			sys.exit(1)
 
@@ -285,6 +319,7 @@ def main():
 			if abs(SOLARYEAR_DAYS - lunar_days) > 30:
 				print("\nTERMINATING PROGRAM: HIRJI YEAR IS OFF FROM SOLAR YEAR BY MORE THAN 30 DAYS")
 				print("\n[FAILURE] Computing Hijri Calendar\n")
+
 				sys.exit(2)
 
 			upcoming_year = end_month.year

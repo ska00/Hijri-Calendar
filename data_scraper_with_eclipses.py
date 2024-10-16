@@ -4,10 +4,13 @@
 
     Scrapes data from AstroPixels and writes to a readable csv file which is fed to 
     the main python program to compute the Islamic Calendar. The csv file contains
-    the headers: datetime,phase,friendlydate.
+    the headers: datetime,phase,friendlydate,eclipse.
+
+    The eclipses are bunched into one single Hirji month, since some of the eclipse types
+    do not happen during the full moon (ex: the solar eclipse only happens when there is a new moon).
 
     This code does not handle errors that may pop up such as not being able to
-    access the website.
+    access the website and can be written more efficiently.
 
     Issues with backtracking:
     1. The Julian calendar was in effect.
@@ -20,10 +23,14 @@
 
     The julian calendar must be converted to Gregorian before use.
 
-    I will add eclipse tags.
-
     Code takes approxiamately 7.7 seconds to run on my PC.
 """
+
+# ----------- Choose start year and end year (Gregorian) of the data to be read --------
+
+START_YEAR = 601        # AD
+END_YEAR = 2100         # AD
+
 
 """------------------ PACKAGES -------------------"""
 from bs4 import BeautifulSoup
@@ -43,8 +50,6 @@ print("Packages imported successfully")
 
 DATE_FORMAT = '%b %d %H:%M' 
 
-# ECLIPSES = [" T", " A", " H", " P", " t", " p", " n"]
-
 ECLIPSE_TAGS = {
     "T": "Total Solar",
     "A": "Annular Solar",
@@ -54,8 +59,6 @@ ECLIPSE_TAGS = {
     "p": "Partial (Umbral) Lunar",
     "n": "Penumbral Lunar"
 }
-
-# ECLIPSE_HEADERS = ECLIPSE_TAGS.keys()
 
 HEADER = ['Year', 'New Moon', 'First Quarter', 'Full Moon', 'Last Quarter']
 
@@ -74,10 +77,10 @@ MONTH_ABB = {
     "Dec": 12 }
 
 PHASE_HEADERS = {
-    0 : "New Moon", 
+    0: "New Moon", 
     1: "First Quarter", 
-    2:"Full Moon", 
-    3:"Last Quarter" }
+    2: "Full Moon", 
+    3: "Last Quarter" }
 
 
 # This is to act as though a user is accessing the website
@@ -122,7 +125,7 @@ def write_to_csv(rows, filename):
         it to a csv file.
     """
 
-    parsed_data = []    # A list of dicitonaries for the date and the moon phase
+    parsed_data = []    # A list of dicitonaries for the moon phases
     year = 0            # The year the data belongs to
 
     for row in rows:
@@ -189,7 +192,7 @@ def write_to_csv(rows, filename):
                 dictionary["friendlydate"] = date.strftime("%B %d, %Y")
                 dictionary["eclipse"] = None
 
-                if len(date_list) == 4:
+                if len(date_list) == 4:     # Look for eclipse tag
                     dictionary["eclipse"] = ECLIPSE_TAGS[date_list[3]]
                 
 
@@ -212,13 +215,10 @@ def write_to_csv(rows, filename):
 """--------------------- MAIN --------------------"""
 def main():
 
-    start_year= 601
-    end_year = 700
-
-    filename = f'moon-phases-{start_year}-to-{end_year}-with-eclipses-UT.csv'
+    filename = f'moon-phases-{START_YEAR}-to-{END_YEAR}-with-eclipses-UT.csv'
 
     # Get pages that need to be scraped
-    pages = [str(number).zfill(4) for number in range(start_year, end_year + 1, 100)]
+    pages = [str(number).zfill(4) for number in range(START_YEAR, END_YEAR + 1, 100)]
 
     # Write header of file
     with open(filename, mode='w', newline='', encoding='utf-8') as file:

@@ -1,4 +1,4 @@
-Order,Year,Interval (years),Muharram
+Order,Year(Hijri),Interval(years),Muharram
 1,8,8,False
 2,11,3,False
 3,18,7,False

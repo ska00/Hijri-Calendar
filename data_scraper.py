@@ -3,8 +3,10 @@
     Date: October 13, 2024
 
     Scrapes data from AstroPixels and writes to a readable csv file which is fed to 
-    the main python program to compute the Islamic Calendar. The csv file contains
+    the main python program to compute the Hijri (Islamic) Calendar. The csv file contains
     the headers: datetime,phase,friendlydate.
+
+    If you would like to include eclipse tags check out 'data_scraper_with_eclipses.py'
 
     This code does not handle errors that may pop up such as not being able to
     access the website.
@@ -20,10 +22,14 @@
 
     The julian calendar must be converted to Gregorian before use.
 
-    I will add eclipse tags.
-
     Code takes approxiamately 7.7 seconds to run on my PC.
 """
+
+# ----------- Choose start year and end year (Gregorian) of the data to be read --------
+
+START_YEAR = 601        # AD
+END_YEAR = 2100         # AD
+
 
 """------------------ PACKAGES -------------------"""
 from bs4 import BeautifulSoup
@@ -197,13 +203,10 @@ def write_to_csv(rows, filename):
 """--------------------- MAIN --------------------"""
 def main():
 
-    start_year= 601
-    end_year = 2001
-
-    filename = f'moon-phases-{start_year}-to-{end_year}-UT.csv'
+    filename = f'moon-phases-{START_YEAR}-to-{END_YEAR}-UT.csv'
 
     # Get pages that need to be scraped
-    pages = [str(number).zfill(4) for number in range(start_year, end_year + 100, 100)]
+    pages = [str(number).zfill(4) for number in range(START_YEAR, END_YEAR + 100, 100)]
 
     # Write header of file
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
