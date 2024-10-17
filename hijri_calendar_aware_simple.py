@@ -61,7 +61,11 @@ FILES_W_ECLIPSES = [
 		{"start_year":  601, "end_year": 4000, "filename": "moon-phases-601-to-4000-with-eclipses-UT.csv"},
 		]
 
+<<<<<<< Updated upstream
 HIJRI_MONTHS = {0: "Muharram",
+=======
+HIJRI_MONTHS = { 0: "Muharram",
+>>>>>>> Stashed changes
 		1: "Safar I", 2: "Safar II", 3: "Rabi I\t", 
 		4: "Rabi II", 5: "Jumada I", 6: "Jumada II",
 		7: "Rajab\t", 8: "Sha'ban", 9: "Ramadan", 
@@ -141,9 +145,9 @@ def main():
 
 	'''	--------- GLOBALS* (*not really..) ------------ '''
 	start_year = 601
-	end_year = 2100
-	entries = parse_file(start_year, end_year)
-	# entries = parse_file_with_eclipses(start_year, end_year)
+	end_year = 4000
+	# entries = parse_file(start_year, end_year)
+	entries = parse_file_with_eclipses(start_year, end_year)
 	entries_length = len(entries)
 
 
