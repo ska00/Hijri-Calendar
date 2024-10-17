@@ -61,7 +61,7 @@ FILES_W_ECLIPSES = [
 		{"start_year":  601, "end_year": 4000, "filename": "moon-phases-601-to-4000-with-eclipses-UT.csv"},
 		]
 
-HIJRI_MONTHS = {
+HIJRI_MONTHS = {0: "Muharram",
 		1: "Safar I", 2: "Safar II", 3: "Rabi I\t", 
 		4: "Rabi II", 5: "Jumada I", 6: "Jumada II",
 		7: "Rajab\t", 8: "Sha'ban", 9: "Ramadan", 
