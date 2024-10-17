@@ -10,7 +10,7 @@ with accordance to the season they appear in. For example, Rabi means spring in 
 Islamic calendar it is the second month of spring; autumn is the season we are currently in. The disjunction of the seasons with the Hijri calendar
 is what motivated this project.
 
-## The New Hirji (Lunisolar) Calendar
+## The New Hijri (Lunisolar) Calendar
 
 This project attempts make a new type of Hirji Calendar that remains in sync with the Solar (Gregorian) calendar. To achieve this, a 13th month must be added every 2 to 3 years.
 The Hijri months are as follows: Safar I, Safar II, Rabi I, Rabi II, Jumada I, Jumada II, Rajab, Sha'ban, Ramadan, Shawwal, Dhul Qadah, and Dhul Hijjah. Notice that the month 
