@@ -61,11 +61,7 @@ FILES_W_ECLIPSES = [
 		{"start_year":  601, "end_year": 4000, "filename": "moon-phases-601-to-4000-with-eclipses-UT.csv"},
 		]
 
-<<<<<<< Updated upstream
-HIJRI_MONTHS = {0: "Muharram",
-=======
 HIJRI_MONTHS = { 0: "Muharram",
->>>>>>> Stashed changes
 		1: "Safar I", 2: "Safar II", 3: "Rabi I\t", 
 		4: "Rabi II", 5: "Jumada I", 6: "Jumada II",
 		7: "Rajab\t", 8: "Sha'ban", 9: "Ramadan", 
@@ -187,7 +183,7 @@ def main():
 	'''	--------- VARIABLES ------------ '''
 
 	hijri_month_lens = {29: 0, 30: 0}
-	hirji_year = 1  					# Hirji year
+	hijri_year = 1  					# Hirji year
 	month_count = 0 					# Which month we're in, look at 'HIJRI_MONTHS'
 	muharram_position = -1  			# The position the month 'Muharram' falls into
 
@@ -244,8 +240,8 @@ def main():
 		print(f"\tHijri (Gregorian) \t{start_month.strftime('%B %d, %Y')} - {end_month.strftime('%B %d, %Y')}")
 
 		# Print Hijri calendar Natural
-		print(f"\tHijri (Natural): \t{HIJRI_MONTHS[month_count]} {1}, {hirji_year} - "
-				+ f"{HIJRI_MONTHS[month_count]} {hijri_month_len}, {hirji_year}")
+		print(f"\tHijri (Natural): \t{HIJRI_MONTHS[month_count]} {1}, {hijri_year} - "
+				+ f"{HIJRI_MONTHS[month_count]} {hijri_month_len}, {hijri_year}")
 		
 		print()
 
@@ -261,10 +257,10 @@ def main():
 
 			print(f"Number of months with 29 days: {hijri_month_lens[29]}, Number of months with 30 days: {hijri_month_lens[30]}")
 
-			print(f"\n------------------------------- THE YEAR IS {upcoming_year} ------------------------------\n")
+			print(f"\n------------------------------- THE YEAR IS {hijri_year + 1} ------------------------------\n")
 				
 			hijri_month_lens = {29: 0, 30: 0}
-			hirji_year += 1
+			hijri_year += 1
 			month_count = 0
 			muharram_position = get_muharram_position(i, upcoming_year)
 
