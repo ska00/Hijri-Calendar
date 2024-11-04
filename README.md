@@ -1,3 +1,5 @@
+# This is the old version, look at [Hijri-Calendar-v2](https://github.com/ska00/Hijri-Calendar-v2)
+
 # A New (Solar-true) Hijri Calendar
 
 ## The Hijri (Islamic) Calendar
